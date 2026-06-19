@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+<%- include("../includes/navbar") %>
+
+<section class="hero">
+    <h1>My Blogs</h1>
+    <p>Read, edit, and manage your blogs here.</p>
+</section>
+
+<section class="notes-container">
+    <% blogs.forEach((blog) => { %>
+        <div class="blog-card">
+
+            <div class="blog-card-content">
+                <h3 class="blog-card-title"><%= blog.title %></h3>
+
+                <p>
+                    <%= blog.content.length > 120
+                        ? blog.content.substring(0, 120) + "..."
+                        : blog.content
+                    %>
+                </p>
+
+                <div class="blog-actions" style="margin-top:20px; display:flex; gap:10px;">
+                    
+                    <!-- Edit -->
+                    <a
+                        href="/edit-blog/<%= blog._id %>?edit=true"
+                        class="blog-card-btn"
+                    >
+                        ✏️ Edit
+                    </a>
+
+                    <!-- Delete -->
+                    <form
+                        action="/delete-blog/<%= blog._id %>"
+                        method="POST"
+                        style="display:inline;"
+                    >
+                        <button
+                            type="submit"
+                            class="blog-card-btn"
+                            onclick="return confirm('Delete this blog?')"
+                        >
+                            🗑️ Delete
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    <% }) %>
+</section>
+
+<div style="text-align:center; margin:40px;">
+    <a href="/add-blog" class="blog-card-btn">
+        ➕ Create New Blog
+    </a>
+</div>

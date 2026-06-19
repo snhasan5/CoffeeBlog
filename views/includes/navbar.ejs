@@ -1,0 +1,15 @@
+<nav class="navbar">
+    <div class="logo">
+        <a href="/">☕ CoffeeBlog</a>
+    </div>
+
+    <div class="nav-links">
+        <a href="/" class="<%= activePage === 'home' ? 'active' : '' %>">Home</a>
+        <a href="/blogs" class="<%= activePage === 'notes' ? 'active' : '' %>">Blogs</a>
+        <a href="/myblogs" class="<%= activePage === 'mynotes' ? 'active' : '' %>">My Blogs</a>
+    </div>
+
+    <div class="login">
+        <a href="/login">Log In</a>
+    </div>
+</nav>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pagetitle %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+
+    <%- include('../includes/navbar.ejs') %>
+
+    <main class="blog-details-wrapper">
+        <div class="blog-details-container">
+
+            <h1 class="blog-details-title">
+                <%= blog.title %>
+            </h1>
+
+            <div class="blog-details-meta">
+                <p><strong>Author:</strong> <%= blog.author %></p>
+
+                <% if (blog.userId && blog.userId.email) { %>
+                    <p><strong>Email:</strong> <%= blog.userId.email %></p>
+                <% } %>
+
+                <p>
+                    <strong>Created:</strong>
+                    <%= blog.createdAt ? blog.createdAt.toString() : "Not available" %>
+                </p>
+            </div>
+
+            <% if (blog.imageUrl) { %>
+                <img 
+                    src="<%= blog.imageUrl %>" 
+                    alt="<%= blog.title %>" 
+                    class="blog-details-image"
+                >
+            <% } %>
+
+            <div class="blog-details-content">
+                <p><%= blog.content %></p>
+            </div>
+            <div>
+                <a href="/blogs" class="blog-card-btn">
+            ← Back to Blogs
+</a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

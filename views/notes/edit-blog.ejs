@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+<%- include("../includes/navbar") %>
+
+<section class="hero">
+    <h1><%= editing ? "Edit Blog" : "Add Blog" %></h1>
+</section>
+
+<form 
+    action="<%= editing ? '/edit-blog/' + blog._id : '/add-blog' %>" 
+    method="POST"
+    class="blog-form"
+>
+    <% if (!editing) { %>
+        <input type="hidden" name="author" value="<%= author %>">
+    <% } %>
+
+    <input 
+        type="text" 
+        name="title" 
+        placeholder="Blog Title"
+        value="<%= editing ? blog.title : '' %>"
+        required
+    >
+
+    <textarea 
+        name="content" 
+        placeholder="Blog Content"
+        required
+    ><%= editing ? blog.content : '' %></textarea>
+
+    <input 
+        type="text" 
+        name="imageUrl" 
+        placeholder="Image URL"
+        value="<%= editing ? blog.imageUrl : '' %>"
+        required
+    >
+
+    <input 
+        type="text" 
+        name="color" 
+        placeholder="Color"
+        value="<%= editing ? blog.color : '' %>"
+        required
+    >
+
+
+
+    <button type="submit" class="blog-card-btn">
+        <%= editing ? "Update Blog" : "Add Blog" %>
+    </button>
+</form>

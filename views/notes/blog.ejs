@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogs</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+
+    <%- include('../includes/navbar.ejs') %>
+
+    <div class="notes-container">
+
+        <% if (blogs.length === 0) { %>
+            <h2>No blogs available.</h2>
+        <% } %>
+
+        <% blogs.forEach(blog => { %>
+
+            <div
+                class="blog-card"
+                style="background:<%= blog.blogcolor %>"
+            >
+
+                <div class="blog-card-content">
+
+                    <h2 class="blog-card-title">
+                        <%= blog.title %>
+                    </h2>
+
+                    <p class="blog-card-author">
+                        ✍️ By <strong><%= blog.author %></strong>
+                    </p>
+
+                    <a href="/blogs/<%= blog._id %>" class="blog-card-btn">
+                        View Full Blog
+                    </a>
+
+                </div>
+
+            </div>
+
+        <% }) %>
+
+    </div>
+
+</body>
+</html>
