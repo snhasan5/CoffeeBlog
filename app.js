@@ -5,6 +5,7 @@ const dns = require('dns');
 const User = require('./models/user.models')
 const Blog = require('./models/blog.models')
 const blogRoutes = require('./routes/blog.routes');
+const authRoutes = require('./routes/auth.routes');
 const Router  = require('./routes/blog.routes');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const app = express();
@@ -27,10 +28,10 @@ app.use((req,res,next)=>{
     });
 }
 )
-app.use(blogRoutes)
+app.use(blogRoutes);
+app.use(authRoutes);
 
-
-mongoose.connect('')
+mongoose.connect('mongodb+srv://hasan:hasan@cluster0.usoqi86.mongodb.net/blog?retryWrites=true&w=majority')
 .then(()=>{
     User.findOne()
     .then(user=>{
