@@ -30,15 +30,13 @@ app.use(
 );
 const {
   invalidCsrfTokenError,
-  generateCsrfToken,
+  generateCsrfToken, //if i have this 
   validateRequest,
   doubleCsrfProtection,
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET,
   getSessionIdentifier: (req) => req.session.id,
-  getCsrfTokenFromRequest: (req) => req.body._csrf,
-  cookieName: "x-csrf-token",
-  cookieOptions: { secure: false, sameSite: "strict", httpOnly: true },
+  getCsrfTokenFromRequest: (req) => req.body._csrf, // why do i need this
 });
 app.use(cookieParser());
 app.use(flash());
@@ -63,7 +61,7 @@ app.use((req, res, next) => {
 
 app.use((req,res,next)=>{
   res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals._csrf = generateCsrfToken(req, res);
+  res.locals._csrf = generateCsrfToken(req, res); //because i used it here
   next();
 })
 app.use(blogRoutes);
@@ -71,7 +69,7 @@ app.use(authRoutes);
 
 
 
-mongoose.connect(MONGOURI).then(() => {
+mongoose.connect(MONGOURI, { family: 4 }).then(() => {
       app.listen(process.env.PORT || 3000);
     })
     .catch((err) => {

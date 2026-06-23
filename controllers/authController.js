@@ -1,9 +1,11 @@
 const User = require("../models/user.models");
+const emailUtil = require("../utils/email")
 const bcrypt = require("bcrypt");
 module.exports.getLoginPage = (req, res, next) => {
   res.render("auth/login", {
     pageTitle: "Login Now",
     activePage: "/login",
+    errorMessage : req.flash('error')
   });
 };
 
@@ -17,9 +19,12 @@ module.exports.getSignupPage = (req, res, next) => {
 module.exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const name = req.body.name;
   User.findOne({ email: req.body.email })
     .then((user) => {
-      if (user) return res.redirect("/login");
+      if (user) {
+        
+        return res.redirect("/login");}
       else {
         return bcrypt
           .hash(password, 12)
@@ -29,7 +34,10 @@ module.exports.postSignup = (req, res, next) => {
               email: email,
               password: hashedPassword,
             });
-            return newUser.save();
+            return newUser.save()
+            .then(()=>{
+              return emailUtil.sendWelcomeEmail(email, name);
+            })
           })
           .then(() => {
             res.redirect("/login");
@@ -47,6 +55,7 @@ module.exports.postLogin = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user){
+        req.flash('error','No User Found! (Incorrect Email or Password)')
         return res.redirect("/login");}
         else {
           bcrypt.compare(password, user.password)
