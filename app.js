@@ -7,31 +7,36 @@ const Blog = require('./models/blog.models')
 const blogRoutes = require('./routes/blog.routes');
 const authRoutes = require('./routes/auth.routes');
 const Router  = require('./routes/blog.routes');
+const MONGOURI = 'mongodb+srv://hasan:hasan@cluster0.usoqi86.mongodb.net/blog?retryWrites=true&w=majority';
+const { MongoStore } = require('connect-mongo');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
+const store = MongoStore.create({
+     mongoUrl: MONGOURI,
+     collectionName: 'sessions'
+})
+const session = require('express-session');
 const app = express();
-
+app.use(
+    session({
+        secret: 'bloged up',
+        resave: false,
+        saveUninitialized : false,
+        store : store
+    })
+)
 app.use(express.urlencoded({extended:  true}));
 app.set('view engine','ejs');
 app.use(express.static(path.join(__dirname,'public')));
 
-app.use((req,res,next)=>{
-    User.findById('6a34c7a70cd9928d57ef7ef9')
-    .then(user=>{
-        req.user = user;
-        console.log("ENTERED FIRST MIDDLEWARE-------------->",req.user);
 
-       
-        next();
-    })
-    .catch(err=>{
-        console.log(err);
-    });
-}
-)
 app.use(blogRoutes);
 app.use(authRoutes);
 
-mongoose.connect('mongodb+srv://hasan:hasan@cluster0.usoqi86.mongodb.net/blog?retryWrites=true&w=majority')
+app.use((req,res,next)=>{
+    
+})
+
+mongoose.connect(MONGOURI)
 .then(()=>{
     User.findOne()
     .then(user=>{

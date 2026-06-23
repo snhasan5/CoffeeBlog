@@ -8,6 +8,8 @@ module.exports.getIndexPage = (req,res,next)=>{
 }
 module.exports.getBlogPage = (req,res,next)=>{
     Blog.find().then((blogs)=>{
+                      console.log(req.session);
+
             res.render('notes/blog',{
                 activePage : '/blogs',
                 blogs : blogs,
