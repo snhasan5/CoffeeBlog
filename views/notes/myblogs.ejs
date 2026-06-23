@@ -43,7 +43,9 @@
                         action="/delete-blog/<%= blog._id %>"
                         method="POST"
                         style="display:inline;"
-                    >
+                    >   
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
                         <button
                             type="submit"
                             class="blog-card-btn"

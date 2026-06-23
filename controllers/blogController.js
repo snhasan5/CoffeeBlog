@@ -31,6 +31,7 @@ module.exports.getFullBlog = (req,res,next)=>{
 }
 
 module.exports.getMyBlogpage = (req,res,next)=>{
+    console.log("In get my blogs----------------<",req.user);
     req.user
     .getMyBlogs().then((blogs)=>{
         console.log(typeof(blogs))
@@ -57,7 +58,7 @@ module.exports.postMyBlog = (req,res,next)=>{
         title : req.body.title,
         content : req.body.content,
         imageUrl : req.body.imageUrl,
-        color : 'ORANGE',
+        color : req.body.color,
         author : req.body.author,
         userId : req.user._id
     })

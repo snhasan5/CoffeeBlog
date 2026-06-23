@@ -17,7 +17,7 @@ const blogSchema = new Schema({
     },
     color:{
         type : String,
-        enum : ['RED','ORANGE','YELLOW'],
+        enum : ['ESPRESSO','MOCHA','LATTE'],
         required : true
     },
     author:{

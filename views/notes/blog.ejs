@@ -10,30 +10,38 @@
 
     <%- include('../includes/navbar.ejs') %>
 
+    <%
+    const THEMES = {
+        ESPRESSO: { bg: '#3e2723', text: '#f5efe6', btnBg: '#D7B899', btnText: '#3e2723' },
+        MOCHA:    { bg: '#8B5E3C', text: '#f5efe6', btnBg: '#3e2723', btnText: '#f5efe6' },
+        LATTE:    { bg: '#D7B899', text: '#3e2723', btnBg: '#3e2723', btnText: '#f5efe6' }
+    };
+    %>
+
     <div class="notes-container">
 
         <% if (blogs.length === 0) { %>
             <h2>No blogs available.</h2>
         <% } %>
 
-        <% blogs.forEach(blog => { %>
+        <% blogs.forEach(blog => {
+            const theme = THEMES[blog.color] || THEMES.LATTE;
+        %>
 
-            <div
-                class="blog-card"
-                style=`background:<%= blog.blogcolor %>`
-            >
+            <div class="blog-card" style="background: <%= theme.bg %>">
 
                 <div class="blog-card-content">
 
-                    <h2 class="blog-card-title">
+                    <h2 class="blog-card-title" style="color: <%= theme.text %>">
                         <%= blog.title %>
                     </h2>
 
-                    <p class="blog-card-author">
-                        ✍️ By <strong><%= blog.author %></strong>
+                    <p class="blog-card-author" style="color: <%= theme.text %>">
+                        By : <strong><%= blog.author %></strong>
                     </p>
 
-                    <a href="/blogs/<%= blog._id %>" class="blog-card-btn">
+                    <a href="/blogs/<%= blog._id %>" class="blog-card-btn"
+                       style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>">
                         View Full Blog
                     </a>
 

@@ -5,6 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= pageTitle %></title>
     <link rel="stylesheet" href="/main.css">
+    <style>
+        .color-select { position: relative; }
+        .color-select-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #d7b899;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            font-size: 1rem;
+            user-select: none;
+        }
+        .color-select-trigger .cs-arrow { margin-left: auto; font-size: 0.8rem; color: #6f4e37; }
+        .color-select-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0; right: 0;
+            border: 1px solid #d7b899;
+            border-radius: 8px;
+            background: white;
+            z-index: 100;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .color-select-dropdown.open { display: block; }
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.15s;
+        }
+        .color-option:hover { background: #f5efe6; }
+        .cs-swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.18);
+            flex-shrink: 0;
+        }
+        .cs-placeholder { color: #aaa; }
+    </style>
 </head>
 <body>
 <%- include("../includes/navbar") %>
@@ -44,17 +91,70 @@
         required
     >
 
-    <input 
-        type="text" 
-        name="color" 
-        placeholder="Color"
-        value="<%= editing ? blog.color : '' %>"
-        required
-    >
+    <input type="hidden" name="color" id="colorInput" value="<%= editing ? blog.color : '' %>">
+
+    <div class="color-select" id="colorSelect">
+        <div class="color-select-trigger" id="colorTrigger">
+            <span class="cs-swatch" id="csSwatch" style="display:none"></span>
+            <span id="csLabel" class="cs-placeholder">Choose card color</span>
+            <span class="cs-arrow">▾</span>
+        </div>
+        <div class="color-select-dropdown" id="colorDropdown">
+            <div class="color-option" data-value="ESPRESSO" data-hex="#3e2723">
+                <span class="cs-swatch" style="background:#3e2723"></span>
+                Espresso — Dark Coffee Brown
+            </div>
+            <div class="color-option" data-value="MOCHA" data-hex="#8B5E3C">
+                <span class="cs-swatch" style="background:#8B5E3C"></span>
+                Mocha — Medium Coffee Brown
+            </div>
+            <div class="color-option" data-value="LATTE" data-hex="#D7B899">
+                <span class="cs-swatch" style="background:#D7B899"></span>
+                Latte — Light Creamy Coffee
+            </div>
+        </div>
+    </div>
 
 
-
+    <input type="hidden" name="_csrf" value="<%= _csrf %>">
     <button type="submit" class="blog-card-btn">
         <%= editing ? "Update Blog" : "Add Blog" %>
     </button>
 </form>
+
+<script>
+    const trigger  = document.getElementById('colorTrigger');
+    const dropdown = document.getElementById('colorDropdown');
+    const input    = document.getElementById('colorInput');
+    const swatch   = document.getElementById('csSwatch');
+    const label    = document.getElementById('csLabel');
+
+    function selectColor(value, hex, text) {
+        input.value        = value;
+        swatch.style.background = hex;
+        swatch.style.display    = 'inline-block';
+        label.textContent  = text;
+        label.classList.remove('cs-placeholder');
+        dropdown.classList.remove('open');
+    }
+
+    document.querySelectorAll('.color-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            selectColor(opt.dataset.value, opt.dataset.hex, opt.textContent.trim());
+        });
+    });
+
+    trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', () => dropdown.classList.remove('open'));
+
+    // Pre-select when editing
+    const initial = input.value;
+    if (initial) {
+        const opt = document.querySelector(`.color-option[data-value="${initial}"]`);
+        if (opt) selectColor(opt.dataset.value, opt.dataset.hex, opt.textContent.trim());
+    }
+</script>

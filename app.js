@@ -1,59 +1,79 @@
-const express = require('express');
-const path = require('path');
-const { default: mongoose } = require('mongoose');
-const dns = require('dns');
-const User = require('./models/user.models')
-const Blog = require('./models/blog.models')
-const blogRoutes = require('./routes/blog.routes');
-const authRoutes = require('./routes/auth.routes');
-const Router  = require('./routes/blog.routes');
-const MONGOURI = 'mongodb+srv://hasan:hasan@cluster0.usoqi86.mongodb.net/blog?retryWrites=true&w=majority';
-const { MongoStore } = require('connect-mongo');
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+const { default: mongoose } = require("mongoose");
+const dns = require("dns");
+const User = require("./models/user.models");
+const Blog = require("./models/blog.models");
+const blogRoutes = require("./routes/blog.routes");
+const authRoutes = require("./routes/auth.routes");
+const Router = require("./routes/blog.routes");
+const cookieParser = require("cookie-parser");
+const { doubleCsrf } = require("csrf-csrf");
+const flash = require('connect-flash');
+const MONGOURI = process.env.MONGO_URI;
+const { MongoStore } = require("connect-mongo");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 const store = MongoStore.create({
-     mongoUrl: MONGOURI,
-     collectionName: 'sessions'
-})
-const session = require('express-session');
+  mongoUrl: MONGOURI,
+  collectionName: "sessions",
+});
+const session = require("express-session");
 const app = express();
 app.use(
-    session({
-        secret: 'bloged up',
-        resave: false,
-        saveUninitialized : false,
-        store : store
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: store,
+  }),
+);
+const {
+  invalidCsrfTokenError,
+  generateCsrfToken,
+  validateRequest,
+  doubleCsrfProtection,
+} = doubleCsrf({
+  getSecret: () => process.env.CSRF_SECRET,
+  getSessionIdentifier: (req) => req.session.id,
+  getCsrfTokenFromRequest: (req) => req.body._csrf,
+  cookieName: "x-csrf-token",
+  cookieOptions: { secure: false, sameSite: "strict", httpOnly: true },
+});
+app.use(cookieParser());
+app.use(flash());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+app.use(doubleCsrfProtection);
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      req.user = user;
+      
+      next();
     })
-)
-app.use(express.urlencoded({extended:  true}));
-app.set('view engine','ejs');
-app.use(express.static(path.join(__dirname,'public')));
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
-
+app.use((req,res,next)=>{
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals._csrf = generateCsrfToken(req, res);
+  next();
+})
 app.use(blogRoutes);
 app.use(authRoutes);
 
-app.use((req,res,next)=>{
-    
-})
 
-mongoose.connect(MONGOURI)
-.then(()=>{
-    User.findOne()
-    .then(user=>{
-        if(!user){
-            const newUser = new User(
-                {
-                username : "Hasan@123",
-                email:'hasan@gmial.com',
-                name: 'Sayyed'
-                }
-            )
-            return newUser.save();
-        }
-    }).then((finalUser)=>{
 
-        app.listen(3000) ; 
-    }).catch(err =>{
-        console.log(err);
+mongoose.connect(MONGOURI).then(() => {
+      app.listen(process.env.PORT || 3000);
     })
-})
+    .catch((err) => {
+      console.log(err);
+    });
