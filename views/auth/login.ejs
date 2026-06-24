@@ -29,12 +29,14 @@
             required
         >
         <input type="hidden" name="_csrf" value="<%= _csrf %>">
+        <a href="/reset" style="color:black; padding-left: 3px;">Forgot Password?</a>
         <button type="submit" class="blog-card-btn">
             Login
         </button>
-
     </form>
 </div>
+
+<%- include('../includes/footer') %>
 
 </body>
 </html>
