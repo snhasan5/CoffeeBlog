@@ -352,3 +352,54 @@
     font-size:0.85rem;
     color:#a1887f;
 }
+
+.auth-form input.invalid {
+   border: 2px solid #c0392b;
+}
+.blog-form input.invalid {
+   border: 2px solid #c0392b;
+}
+.error-container{
+    min-height:calc(100vh - 80px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.error-code{
+    font-size:7rem;
+    color:#6f4e37;
+    margin-bottom:10px;
+}
+
+.error-container h2{
+    color:#4b3621;
+    margin-bottom:20px;
+    font-size:2rem;
+}
+
+.error-container p{
+    max-width:550px;
+    color:#6f4e37;
+    line-height:1.7;
+    margin-bottom:30px;
+}
+
+.error-btn{
+    display:inline-block;
+    padding:12px 24px;
+    background:#4b3621;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.error-btn:hover{
+    background:#6f4e37;
+    transform:translateY(-2px);
+}

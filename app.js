@@ -67,7 +67,18 @@ app.use((req,res,next)=>{
 app.use(blogRoutes);
 app.use(authRoutes);
 
+app.use((req,res)=>{
+  res.render('error/404',{
+    activePage : '/404',
 
+  })
+})
+
+app.use((error,req,res,next)=>{
+  res.render('error/500',{
+    activePage :'/500'
+  })
+})
 
 mongoose.connect(MONGOURI, { family: 4 }).then(() => {
       app.listen(process.env.PORT || 3000);

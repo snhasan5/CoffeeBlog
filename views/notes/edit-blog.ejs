@@ -64,16 +64,20 @@
     action="<%= editing ? '/edit-blog/' + blog._id : '/add-blog' %>" 
     method="POST"
     class="blog-form"
->
+>   
+            <% if(errorMessage){ %>
+            <div class="error-message">* <%= errorMessage %></div>
+            <% } %>
     <% if (!editing) { %>
         <input type="hidden" name="author" value="<%= author %>">
     <% } %>
 
     <input 
+            class="<%=  validationErrors.find((e)=>{ return e.path === 'password'}) ? 'invalid' : ''%>"
         type="text" 
         name="title" 
         placeholder="Blog Title"
-        value="<%= editing ? blog.title : '' %>"
+        value="<%= editing ? blog.title : enteredValue.title %>"
         required
     >
 
@@ -81,17 +85,19 @@
         name="content" 
         placeholder="Blog Content"
         required
-    ><%= editing ? blog.content : '' %></textarea>
+    ><%= editing ? blog.content : enteredValue.content %></textarea>
 
     <input 
+                class="<%=  validationErrors.find((e)=>{ return e.path === 'imageUrl'}) ? 'invalid' : ''%>"
+
         type="text" 
         name="imageUrl" 
         placeholder="Image URL"
-        value="<%= editing ? blog.imageUrl : '' %>"
+        value="<%= editing ? blog.imageUrl : enteredValue.imageUrl %>"
         required
     >
 
-    <input type="hidden" name="color" id="colorInput" value="<%= editing ? blog.color : '' %>">
+    <input type="hidden" name="color" id="colorInput" value="<%= editing ? blog.color :  enteredValue.color %>">
 
     <div class="color-select" id="colorSelect">
         <div class="color-select-trigger" id="colorTrigger">

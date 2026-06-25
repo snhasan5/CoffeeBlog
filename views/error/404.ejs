@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+
+    <%- include("../includes/navbar.ejs") %>
+
+    <div class="error-container">
+
+        <h1 class="error-code">404</h1>
+
+        <h2>Oops! Page Not Found</h2>
+
+        <p>
+            The page you're looking for doesn't exist or may have been moved.
+        </p>
+
+        <a href="/" class="error-btn">
+            ← Back to Home
+        </a>
+
+    </div>
+    <%- include("../includes/footer.ejs")%>
+</body>
+</html>

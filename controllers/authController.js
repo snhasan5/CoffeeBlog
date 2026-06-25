@@ -11,37 +11,63 @@ module.exports.getLoginPage = (req, res, next) => {
     pageTitle: "Login Now",
     activePage: "/login",
     errorMessage: req.flash("error"),
+    enteredValue: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 };
 
 module.exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const errors = validationResult(req) ; 
-  console.log(errors);
-  if(!errors.isEmpty()){
-    return res.render("auth/login", { 
+  const errors = validationResult(req).array();
+  if (errors.length != 0) {
+    return res.status(400).render("auth/login", {
       pageTitle: "Login Now",
       activePage: "/login",
-      errorMessage: errors.array()[0].msg,
+
+      errorMessage: errors[0].msg,
+      enteredValue: {
+        email: email,
+        password: password,
+      },
+      validationErrors: errors,
     });
   }
   User.findOne({ email: email })
     .then((user) => {
-        bcrypt.compare(password, user.password).then((doMatch) => {
-          console.log(doMatch);
-          if (doMatch) {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            req.session.save((err) => {
-              return res.redirect("/");
-            });
-          } else return res.redirect("/login");
-        });
-      }
-    )
+      return bcrypt.compare(password, user.password).then((doMatch) => {
+        if (doMatch) {
+          req.session.isLoggedIn = true;
+          req.session.user = user;
+          req.session.save((err) => {
+            return res.redirect("/");
+          });
+        } else {
+          errors.push({
+            type: "field",
+            value: password,
+            msg: "E-Mail or the password is incorrect!",
+            path: "password",
+            location: "body",
+          });
+          return res.status(400).render("auth/login", {
+            pageTitle: "Login Now",
+            activePage: "/login",
+            errorMessage: errors[0].msg,
+            enteredValue: {
+              email: email,
+              password: password,
+            },
+            validationErrors: errors,
+          });
+        }
+      })
+    })
     .catch((err) => {
-      console.log(err);
+      next(err);
     });
 };
 
@@ -50,12 +76,13 @@ module.exports.getSignupPage = (req, res, next) => {
     pageTitle: "Sign Up",
     activePage: "/signup",
     errorMessage: req.flash("error"),
-    enteredValue :{
-      name : '',
-      email: '',
-      password: '',
-      confirmPassword:''
-    }
+    enteredValue: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -67,16 +94,17 @@ module.exports.postSignup = (req, res, next) => {
   const errors = validationResult(req);
   console.log(errors);
   if (!errors.isEmpty()) {
-    res.render("auth/signup", {
+    res.status(400).render("auth/signup", {
       pageTitle: "Sign Up",
       activePage: "/signup",
       errorMessage: errors.array()[0].msg,
-      enteredValue:{
+      enteredValue: {
         name: name,
         email: email,
         password: password,
-        confirmPassword : confirmPassword
-      }
+        confirmPassword: confirmPassword,
+      },
+      validationErrors: errors.array(),
     });
   } else {
     User.findOne({ email: req.body.email })
@@ -103,12 +131,10 @@ module.exports.postSignup = (req, res, next) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        next(err);
       });
   }
 };
-
-
 
 module.exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
@@ -158,7 +184,6 @@ exports.postReset = (req, res, next) => {
           });
       })
       .catch((err) => {
-        console.log(err);
         next(err);
       });
   });
@@ -184,7 +209,6 @@ exports.getNewPasswordPage = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };

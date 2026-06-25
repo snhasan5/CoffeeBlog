@@ -18,16 +18,21 @@
             <div class="error-message">* <%= errorMessage %></div>
             <% } %>
         <input
+            class="<%=  validationErrors.find((e)=>{ return e.path === 'email'}) ? 'invalid' : ''%>"
+
             type="email"
             name="email"
             placeholder="Enter your email"
+            value="<%= enteredValue.email%>"
             required
         >
 
         <input
+            class="<%=  validationErrors.find((e)=>{ return e.path === 'password'}) ? 'invalid' : ''%>"
             type="password"
             name="password"
             placeholder="Enter your password"
+            value="<%= enteredValue.password%>"
             required
         >
         <input type="hidden" name="_csrf" value="<%= _csrf %>">
