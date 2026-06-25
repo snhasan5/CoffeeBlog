@@ -13,9 +13,10 @@
     <div class="auth-container">
 
         <form action="/signup" method="POST" class="auth-form">
-
+                <% if(errorMessage){ %>
+            <div class="error-message">* <%= errorMessage %></div>
+            <% } %>
             <h1>Create Your Account</h1>
-
             <p class="auth-subtitle">
                 Join us and start sharing your thoughts with the world.
             </p>
@@ -24,12 +25,14 @@
                 type="text"
                 name="name"
                 placeholder="Full Name (Optional)"
+                value= "<%= enteredValue.name %>"
             >
 
             <input
-                type="email"
+                type="text"
                 name="email"
                 placeholder="Email Address"
+value= "<%= enteredValue.email %>"
                 required
             >
 
@@ -37,6 +40,7 @@
                 type="password"
                 name="password"
                 placeholder="Password"
+value= "<%= enteredValue.password %>"
                 required
             >
 
@@ -44,6 +48,7 @@
                 type="password"
                 name="confirmPassword"
                 placeholder="Confirm Password"
+                value= "<%= enteredValue.confirmPassword %>"
             >
             <input type="hidden" name="_csrf" value="<%= _csrf %>">
             <button type="submit" class="auth-btn">

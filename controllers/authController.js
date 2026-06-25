@@ -1,8 +1,11 @@
+const { error } = require("console");
 const User = require("../models/user.models");
 const emailUtil = require("../utils/email");
 const resetPass = require("../utils/reset-pass");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
+
 module.exports.getLoginPage = (req, res, next) => {
   res.render("auth/login", {
     pageTitle: "Login Now",
@@ -11,53 +14,20 @@ module.exports.getLoginPage = (req, res, next) => {
   });
 };
 
-module.exports.getSignupPage = (req, res, next) => {
-  res.render("auth/signup", {
-    pageTitle: "Sign Up",
-    activePage: "/signup",
-  });
-};
-
-module.exports.postSignup = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const name = req.body.name;
-  User.findOne({ email: req.body.email })
-    .then((user) => {
-      if (user) {
-        return res.redirect("/login");
-      } else {
-        return bcrypt
-          .hash(password, 12)
-          .then((hashedPassword) => {
-            const newUser = new User({
-              name: req.body.name,
-              email: email,
-              password: hashedPassword,
-            });
-            return newUser.save().then(() => {
-              return emailUtil.sendWelcomeEmail(email, name);
-            });
-          })
-          .then(() => {
-            res.redirect("/login");
-          });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
 module.exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = validationResult(req) ; 
+  console.log(errors);
+  if(!errors.isEmpty()){
+    return res.render("auth/login", { 
+      pageTitle: "Login Now",
+      activePage: "/login",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
   User.findOne({ email: email })
     .then((user) => {
-      if (!user) {
-        req.flash("error", "No User Found! (Incorrect Email or Password)");
-        return res.redirect("/login");
-      } else {
         bcrypt.compare(password, user.password).then((doMatch) => {
           console.log(doMatch);
           if (doMatch) {
@@ -69,11 +39,76 @@ module.exports.postLogin = (req, res, next) => {
           } else return res.redirect("/login");
         });
       }
-    })
+    )
     .catch((err) => {
       console.log(err);
     });
 };
+
+module.exports.getSignupPage = (req, res, next) => {
+  res.render("auth/signup", {
+    pageTitle: "Sign Up",
+    activePage: "/signup",
+    errorMessage: req.flash("error"),
+    enteredValue :{
+      name : '',
+      email: '',
+      password: '',
+      confirmPassword:''
+    }
+  });
+};
+
+module.exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const name = req.body.name;
+  const confirmPassword = req.body.confirmPassword;
+  const errors = validationResult(req);
+  console.log(errors);
+  if (!errors.isEmpty()) {
+    res.render("auth/signup", {
+      pageTitle: "Sign Up",
+      activePage: "/signup",
+      errorMessage: errors.array()[0].msg,
+      enteredValue:{
+        name: name,
+        email: email,
+        password: password,
+        confirmPassword : confirmPassword
+      }
+    });
+  } else {
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (user) {
+          req.flash("error", "Email already exist !");
+          return res.redirect("/signup");
+        } else {
+          return bcrypt
+            .hash(password, 12)
+            .then((hashedPassword) => {
+              const newUser = new User({
+                name: req.body.name,
+                email: email,
+                password: hashedPassword,
+              });
+              return newUser.save().then(() => {
+                return emailUtil.sendWelcomeEmail(email, name);
+              });
+            })
+            .then(() => {
+              res.redirect("/login");
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
+
+
 
 module.exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
@@ -83,7 +118,7 @@ module.exports.postLogout = (req, res, next) => {
 };
 
 module.exports.getResetPage = (req, res, next) => {
-  const errorMessage = req.flash("error")
+  const errorMessage = req.flash("error");
   res.render("auth/reset", {
     pageTitle: "Reset Password",
     activePage: "/reset",

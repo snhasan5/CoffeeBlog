@@ -14,7 +14,9 @@
     <form action="/login" method="POST" class="auth-form">
 
         <h2>Login</h2>
-        <%= errorMessage%>
+        <% if(errorMessage){ %>
+            <div class="error-message">* <%= errorMessage %></div>
+            <% } %>
         <input
             type="email"
             name="email"

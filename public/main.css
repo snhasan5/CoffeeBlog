@@ -298,6 +298,12 @@
     transform:translateY(-2px);
 }
 
+.error-message{
+    color:#c0392b;
+    font-size:0.9rem;
+    font-weight:500;
+}
+
 .site-footer{
     background:#3e2723;
     color:#f5efe6;
