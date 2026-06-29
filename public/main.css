@@ -5,7 +5,14 @@
             font-family:Arial, sans-serif;
         }
 
+        html{
+            min-height:100%;
+        }
+
         body{
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
             background:#f5efe6;
             color:#4b3621;
         }
@@ -309,7 +316,7 @@
     color:#f5efe6;
     padding:40px 20px;
     text-align:center;
-    margin-top:60px;
+    margin-top:auto;
 }
 
 .footer-inner{

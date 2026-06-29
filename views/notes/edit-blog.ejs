@@ -63,6 +63,7 @@
 <form 
     action="<%= editing ? '/edit-blog/' + blog._id : '/add-blog' %>" 
     method="POST"
+    enctype="multipart/form-data"
     class="blog-form"
 >   
             <% if(errorMessage){ %>
@@ -87,13 +88,20 @@
         required
     ><%= editing ? blog.content : enteredValue.content %></textarea>
 
-    <input 
+    <!-- <input 
                 class="<%=  validationErrors.find((e)=>{ return e.path === 'imageUrl'}) ? 'invalid' : ''%>"
 
         type="text" 
         name="imageUrl" 
         placeholder="Image URL"
         value="<%= editing ? blog.imageUrl : enteredValue.imageUrl %>"
+        required
+    > -->
+        <input 
+        type="file" 
+        name="image" 
+        placeholder="image"
+        value="<%= editing ? blog.image : enteredValue.image %>"
         required
     >
 

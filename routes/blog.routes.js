@@ -11,7 +11,7 @@ router.get('/myblogs',isAuth, blogController.getMyBlogpage);
 router.get('/add-blog',isAuth, blogController.getMyAddPage);
 router.post('/add-blog',blogValidate,blogController.postMyBlog);
 router.get('/edit-blog/:blogId',isAuth, blogController.getEditPage);
-router.post('/edit-blog/:blogId',blogController.postEditPage);
+router.post('/edit-blog/:blogId',blogValidate,blogController.postEditPage);
 router.post('/delete-blog/:blogId',blogController.postDeleteBlog)
-
+router.get('/download/:blogId',isAuth,blogController.getBlog);
 module.exports = router

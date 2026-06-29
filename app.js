@@ -18,6 +18,7 @@ const store = MongoStore.create({
   mongoUrl: MONGOURI,
   collectionName: "sessions",
 });
+const multer = require('multer');
 const session = require("express-session");
 const app = express();
 app.use(
@@ -38,11 +39,28 @@ const {
   getSessionIdentifier: (req) => req.session.id,
   getCsrfTokenFromRequest: (req) => req.body._csrf, // why do i need this
 });
+const fileStorage = multer.diskStorage({
+  destination : (req,file,cb)=>{
+    cb(null,'images');
+  },
+  filename : (req,file,cb)=>{
+    const timestamp = new Date().toISOString().replace(/:/g, "-");
+    cb(null, timestamp + '-' + file.originalname);
+  }
+});
+const fileFilter = (req,file,cb)=>{
+  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+    cb(null,true);
+  }
+  else cb(null, false);
+}
 app.use(cookieParser());
 app.use(flash());
 app.use(express.urlencoded({ extended: true }));
+app.use(multer({storage : fileStorage, fileFilter : fileFilter}).single('image'));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
+app.use('/images', express.static(path.join(__dirname, "images")));
 app.use(doubleCsrfProtection);
 app.use((req, res, next) => {
   if (!req.session.user) {
