@@ -56,7 +56,7 @@
 <body>
 <%- include("../includes/navbar") %>
 
-<section class="hero">
+<section class="hero blog-edit-hero">
     <h1><%= editing ? "Edit Blog" : "Add Blog" %></h1>
 </section>
 
@@ -97,13 +97,17 @@
         value="<%= editing ? blog.imageUrl : enteredValue.imageUrl %>"
         required
     > -->
+    <% if (editing &&  blog.imageUrl ) { %>
+        <img src="../../<%= blog.imageUrl %>" class="blog-image-preview" alt="Current blog image">
+    <% } %>
+    <label class="file-upload blog-card-btn">
+        <%= editing ? "Update File" : "Choose File" %>
         <input 
-        type="file" 
-        name="image" 
-        placeholder="image"
-        value="<%= editing ? blog.image : enteredValue.image %>"
-        required
-    >
+            type="file" 
+            name="image" 
+            value="<%= editing ? blog.imageUrl : enteredValue.imageUrl %>"
+        >
+    </label>
 
     <input type="hidden" name="color" id="colorInput" value="<%= editing ? blog.color :  enteredValue.color %>">
 
@@ -131,9 +135,13 @@
 
 
     <input type="hidden" name="_csrf" value="<%= _csrf %>">
-    <button type="submit" class="blog-card-btn">
-        <%= editing ? "Update Blog" : "Add Blog" %>
-    </button>
+    <div class="edit-container">
+        <a href="/myblogs" class="blog-card-btn">Cancel</a>
+        <button type="submit" class="blog-card-btn">
+            <%= editing ? "Update Blog" : "Add Blog" %>
+        </button>
+    </div>
+
 </form>
 
 <script>
