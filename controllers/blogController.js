@@ -12,16 +12,30 @@ module.exports.getIndexPage = (req, res, next) => {
   });
 };
 module.exports.getBlogPage = (req, res, next) => {
-  let page = req.query.page;
-  Blog.find().skip((page-1)*BLOG_LIMIT).limit(BLOG_LIMIT).then((blogs) => {
-    console.log(req.session);
-
-    res.render("notes/blog", {
-      activePage: "/blogs",
-      blogs: blogs,
-      pageTitle: "Blogs",
+  let page = +req.query.page || 1;
+  let totalBlogs = 0;
+  return Blog.countDocuments().then((length)=>{
+    totalBlogs = length;
+    return   Blog.find()
+    .skip((page - 1) * BLOG_LIMIT)
+    .limit(BLOG_LIMIT)
+    .then((blogs) => {
+      console.log(req.session);
+      res.render("notes/blog", {
+        activePage: "/blogs",
+        blogs: blogs,
+        pageTitle: "Blogs",
+        previousPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage : Math.ceil(totalBlogs/BLOG_LIMIT)
+      });
     });
-  });
+  }).catch(err=>{
+    console.log(err);
+    next(err);
+  })
+
 };
 
 module.exports.getFullBlog = (req, res, next) => {
@@ -43,15 +57,31 @@ module.exports.getFullBlog = (req, res, next) => {
 };
 
 module.exports.getMyBlogpage = (req, res, next) => {
+  let page = +req.query.page || 1;
+  console.log(page);
+  let totalBlogs = 0;
   console.log("In get my blogs----------------<", req.user);
-  req.user.getMyBlogs().then((blogs) => {
+  Blog.countDocuments({userId : req.user}).then((count)=>{
+    totalBlogs = count;
+    return req.user.getMyBlogs()
+    .skip((page - 1) * BLOG_LIMIT)
+    .limit(BLOG_LIMIT).then((blogs) => {
     console.log(typeof blogs);
     res.render("notes/myblogs", {
       activePage: "/myblogs",
       blogs: blogs,
       pageTitle: "My Blogs",
+      previousPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage : Math.ceil(totalBlogs/BLOG_LIMIT)
     });
-  });
+  })
+  }).catch(err=>{
+    console.log(err);
+    next(err);
+  })
+  
 };
 
 module.exports.getMyAddPage = (req, res, next) => {
@@ -149,16 +179,16 @@ module.exports.postDeleteBlog = (req, res, next) => {
       let imagePath = blog.imageUrl;
 
       return Blog.findByIdAndDelete(blogId)
-      .then(() => {
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-          res.redirect("/myblogs");
-        });
-      })
+        .then(() => {
+          fs.unlink(imagePath, (err) => {
+            if (err) {
+              console.log(err);
+            }
+            res.redirect("/myblogs");
+          });
+        })
     })
-      .catch((err) => {
+    .catch((err) => {
       console.log(err);
       next(err);
     });
