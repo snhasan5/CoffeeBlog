@@ -15,56 +15,64 @@
 </section>
 
 <section class="notes-container">
-    <% blogs.forEach((blog) => { %>
-        <div class="blog-card">
+    <%
+    const THEMES = {
+        ESPRESSO: { bg: '#3e2723', text: '#f5efe6', btnBg: '#D7B899', btnText: '#3e2723' },
+        MOCHA:    { bg: '#8B5E3C', text: '#f5efe6', btnBg: '#3e2723', btnText: '#f5efe6' },
+        LATTE:    { bg: '#D7B899', text: '#3e2723', btnBg: '#3e2723', btnText: '#f5efe6' }
+    };
+    %>
 
+    <% blogs.forEach((blog) => {
+        const theme = THEMES[blog.color] || THEMES.LATTE;
+    %>
+        <div class="blog-card" style="background: <%= theme.bg %>">
             <div class="blog-card-content">
-                <h3 class="blog-card-title"><%= blog.title %></h3>
+                <h3 class="blog-card-title" style="color: <%= theme.text %>"><%= blog.title %></h3>
 
-                <p>
-                    <%= blog.content.length > 120
-                        ? blog.content.substring(0, 120) + "..."
-                        : blog.content
-                    %>
-                </p>
+                <% if (blog.imageUrl) { %>
+                    <img src="/<%= blog.imageUrl %>" alt="<%= blog.title %>" class="blog-card-image">
+                <% } else { %>
+                    <div class="blog-card-image blog-card-image-placeholder">No image</div>
+                <% } %>
 
-                <div class="blog-actions" style="margin-top:20px; display:flex; gap:10px;">
-                    
-                    <!-- Edit -->
+                <div class="blog-actions">
                     <a
                         href="/edit-blog/<%= blog._id %>?edit=true"
                         class="blog-card-btn"
+                        style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>"
                     >
-                        ✏️ Edit
+                        Edit
                     </a>
 
-                    <!-- Delete -->
                     <form
                         action="/delete-blog/<%= blog._id %>"
                         method="POST"
-                        style="display:inline;"
-                    >   
-                            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                    >
+                        <input type="hidden" name="_csrf" value="<%= _csrf %>">
 
                         <button
                             type="submit"
                             class="blog-card-btn"
+                            style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>"
                             onclick="return confirm('Delete this blog?')"
                         >
-                            🗑️ Delete
+                            Delete
                         </button>
                     </form>
-
                 </div>
-            </div>
 
+                <p class="blog-card-author" style="color: <%= theme.text %>">
+                    By <strong><%= blog.author %></strong>
+                </p>
+            </div>
         </div>
     <% }) %>
 </section>
 
 <div style="text-align:center; margin:40px;">
     <a href="/add-blog" class="blog-card-btn">
-        ➕ Create New Blog
+        Create New Blog
     </a>
 </div>
 
