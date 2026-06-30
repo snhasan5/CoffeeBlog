@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
 const PDFDocument = require("pdfkit");
-
+const BLOG_LIMIT = 3;
 module.exports.getIndexPage = (req, res, next) => {
   res.render("notes/index", {
     activePage: "/",
@@ -11,7 +11,8 @@ module.exports.getIndexPage = (req, res, next) => {
   });
 };
 module.exports.getBlogPage = (req, res, next) => {
-  Blog.find().then((blogs) => {
+  const page = req.query.page;
+  Blog.find().skip((page-1)*BLOG_LIMIT).then((blogs) => {
     console.log(req.session);
 
     res.render("notes/blog", {
