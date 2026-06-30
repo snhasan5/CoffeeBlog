@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
 const PDFDocument = require("pdfkit");
-const BLOG_LIMIT = 3;
+
 module.exports.getIndexPage = (req, res, next) => {
   res.render("notes/index", {
     activePage: "/",
