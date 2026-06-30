@@ -44,7 +44,7 @@
                     </div>
 
                     <% if (blog.imageUrl) { %>
-                        <img src="\<%= blog.imageUrl %>" alt="<%= blog.title %>" class="blog-details-image">
+                        <img src="/<%= blog.imageUrl %>" alt="<%= blog.title %>" class="blog-details-image">
                         <% } %>
 
                             <div class="blog-details-content" style="color: <%= theme.text %>">
@@ -53,18 +53,18 @@
                                 </p>
                             </div>
 
-                            <div style="margin-top: 25px">
-                                <a href="/download/<%= blog.id %>">Download</a>
+                            <div class="blog-details-actions">
+                                <a href="/download/<%= blog.id %>" class="blog-card-btn"
+                                    style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>">
+                                    Download
+                                </a>
                                 <a href="/blogs" class="blog-card-btn"
                                     style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>">
-                                    ← Back to Blogs
+                                    Back to Blogs
                                 </a>
                             </div>
                 </div>
             </main>
-
-            <%- include('../includes/footer') %>
-
 </body>
 
 </html>

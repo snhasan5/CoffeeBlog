@@ -79,7 +79,6 @@ module.exports.postMyBlog = (req, res, next) => {
   const author = req.body.author;
   const userId = req.user._id;
   if (!image) {
-    console.log("EFOWWWWWWWWWWWWWWWWWWWWWWfnowhqpwwwwwww");
     return res.status(400).render("notes/edit-blog", {
       activePage: "/add-blogs",
       editing: false,
@@ -225,7 +224,7 @@ module.exports.postEditPage = (req, res, next) => {
         return res.status(403).render("error/403", { pageTitle: "Forbidden" });
       }
       const image = req.file;
-      if (!image) {
+      if (!image && !blog.imageUrl) {
         console.log("IMAGE EROROROR------------...............");
         return res.render("notes/edit-blog", {
           activePage: "/edit-blogs",
@@ -237,10 +236,11 @@ module.exports.postEditPage = (req, res, next) => {
           validationErrors: [],
         });
       }
+      const imageUrl = (!image) ? blog.imageUrl : req.file.path;
       return Blog.findByIdAndUpdate(req.params.blogId, {
         title: req.body.title,
         content: req.body.content,
-        imageUrl: req.file.path,
+        imageUrl: imageUrl,
         color: req.body.color,
       }).then(() => {
         res.redirect("/myblogs");
@@ -267,14 +267,13 @@ module.exports.getBlog = (req, res, next) => {
       //     console.log("ERROR", err);
       //     return next(err);
       //   }
-
+      // res.send(data);
       // }
       // );
       const pdfDoc = new PDFDocument();
       pdfDoc.pipe(fs.createWriteStream(blogPath));
       pdfDoc.pipe(res);
-      pdfDoc.text("DLROW OLLEH");
-      // res.send(data);
+      pdfDoc.text("Hello World");
       pdfDoc.end();
       ``;
     })

@@ -36,23 +36,31 @@
                         <%= blog.title %>
                     </h2>
 
-                    <p class="blog-card-author" style="color: <%= theme.text %>">
-                        By : <strong><%= blog.author %></strong>
-                    </p>
+                    <% if (blog.imageUrl) { %>
+                        <img src="/<%= blog.imageUrl %>" alt="<%= blog.title %>" class="blog-card-image">
+                    <% } else { %>
+                        <div class="blog-card-image blog-card-image-placeholder">No image</div>
+                    <% } %>
 
                     <a href="/blogs/<%= blog._id %>" class="blog-card-btn"
                        style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>">
                         View Full Blog
                     </a>
 
+                    <p class="blog-card-author" style="color: <%= theme.text %>">
+                        By <strong><%= blog.author %></strong>
+                    </p>
+
                 </div>
 
             </div>
 
-        <% }) %>
-
-    </div>
-
+            <% }) %>
+            </div>
+            <section class="pagination">
+                <a href="/?page=1">1</a>
+                <a href="/?page=2">2</a>
+            </section>
     <%- include('../includes/footer') %>
 
 </body>
