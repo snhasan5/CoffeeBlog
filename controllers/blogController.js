@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
 const PDFDocument = require("pdfkit");
+
 const BLOG_LIMIT = 3;
 module.exports.getIndexPage = (req, res, next) => {
   res.render("notes/index", {
@@ -11,8 +12,7 @@ module.exports.getIndexPage = (req, res, next) => {
   });
 };
 module.exports.getBlogPage = (req, res, next) => {
-  const page = req.query.page;
-  Blog.find().skip((page-1)*BLOG_LIMIT).then((blogs) => {
+  Blog.find().then((blogs) => {
     console.log(req.session);
 
     res.render("notes/blog", {
@@ -20,7 +20,11 @@ module.exports.getBlogPage = (req, res, next) => {
       blogs: blogs,
       pageTitle: "Blogs",
     });
-  });
+  }).catch(err=>{
+    console.log(err);
+    next(err);
+  })
+
 };
 
 module.exports.getFullBlog = (req, res, next) => {
@@ -42,15 +46,31 @@ module.exports.getFullBlog = (req, res, next) => {
 };
 
 module.exports.getMyBlogpage = (req, res, next) => {
+  let page = +req.query.page || 1;
+  console.log(page);
+  let totalBlogs = 0;
   console.log("In get my blogs----------------<", req.user);
-  req.user.getMyBlogs().then((blogs) => {
+  Blog.countDocuments({userId : req.user}).then((count)=>{
+    totalBlogs = count;
+    return req.user.getMyBlogs()
+    .skip((page - 1) * BLOG_LIMIT)
+    .limit(BLOG_LIMIT).then((blogs) => {
     console.log(typeof blogs);
     res.render("notes/myblogs", {
       activePage: "/myblogs",
       blogs: blogs,
       pageTitle: "My Blogs",
+      previousPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage : Math.ceil(totalBlogs/BLOG_LIMIT)
     });
-  });
+  })
+  }).catch(err=>{
+    console.log(err);
+    next(err);
+  })
+  
 };
 
 module.exports.getMyAddPage = (req, res, next) => {
@@ -148,16 +168,16 @@ module.exports.postDeleteBlog = (req, res, next) => {
       let imagePath = blog.imageUrl;
 
       return Blog.findByIdAndDelete(blogId)
-      .then(() => {
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-          res.redirect("/myblogs");
-        });
-      })
+        .then(() => {
+          fs.unlink(imagePath, (err) => {
+            if (err) {
+              console.log(err);
+            }
+            res.redirect("/myblogs");
+          });
+        })
     })
-      .catch((err) => {
+    .catch((err) => {
       console.log(err);
       next(err);
     });

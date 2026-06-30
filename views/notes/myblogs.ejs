@@ -45,21 +45,17 @@
                         Edit
                     </a>
 
-                    <form
-                        action="/delete-blog/<%= blog._id %>"
-                        method="POST"
-                    >
+                        <input type="hidden" name="blogId" value="<%= blog._id%>">
                         <input type="hidden" name="_csrf" value="<%= _csrf %>">
 
                         <button
-                            type="submit"
+                            type="button"
                             class="blog-card-btn"
                             style="background: <%= theme.btnBg %>; color: <%= theme.btnText %>"
-                            onclick="return confirm('Delete this blog?')"
+                            onclick="deleteBlog(this)"
                         >
                             Delete
                         </button>
-                    </form>
                 </div>
 
                 <p class="blog-card-author" style="color: <%= theme.text %>">
@@ -69,6 +65,7 @@
         </div>
     <% }) %>
 </section>
+    <%- include('../includes/pagination.ejs')%>
 
 <div style="text-align:center; margin:40px;">
     <a href="/add-blog" class="blog-card-btn">
@@ -77,6 +74,6 @@
 </div>
 
 <%- include('../includes/footer') %>
-
+<script src="../../public/js/admin.js"></script>
 </body>
 </html>
