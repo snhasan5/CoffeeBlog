@@ -31,13 +31,14 @@ app.use(
 );
 const {
   invalidCsrfTokenError,
-  generateCsrfToken, //if i have this 
+  generateCsrfToken, 
   validateRequest,
   doubleCsrfProtection,
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET,
   getSessionIdentifier: (req) => req.session.id,
-  getCsrfTokenFromRequest: (req) => req.body._csrf, // why do i need this
+  getCsrfTokenFromRequest: (req) =>req.headers["x-csrf-token"] ||req.body._csrf  ,
+ 
 });
 const fileStorage = multer.diskStorage({
   destination : (req,file,cb)=>{
@@ -56,11 +57,16 @@ const fileFilter = (req,file,cb)=>{
 }
 app.use(cookieParser());
 app.use(flash());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(multer({storage : fileStorage, fileFilter : fileFilter}).single('image'));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/images', express.static(path.join(__dirname, "images")));
+app.use((req,res,next)=>{
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  next();
+})
 app.use(doubleCsrfProtection);
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -78,7 +84,6 @@ app.use((req, res, next) => {
 });
 
 app.use((req,res,next)=>{
-  res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals._csrf = generateCsrfToken(req, res); //because i used it here
   next();
 })
@@ -93,7 +98,21 @@ app.use((req,res)=>{
 })
 
 app.use((error,req,res,next)=>{
-  res.render('error/500',{
+  const wantsJson = req.accepts("json") && !req.accepts("html");
+  const statusCode = error.statusCode || error.status || 500;
+
+  res.locals.isAuthenticated = req.session && req.session.isLoggedIn;
+  if (!res.locals._csrf && req.csrfToken) {
+    res.locals._csrf = req.csrfToken();
+  }
+
+  if (wantsJson) {
+    return res.status(statusCode).json({
+      message: error.message || "Something went wrong"
+    });
+  }
+
+  res.status(statusCode).render('error/500',{
     activePage :'/500'
   })
 })

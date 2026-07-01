@@ -12,19 +12,31 @@ module.exports.getIndexPage = (req, res, next) => {
   });
 };
 module.exports.getBlogPage = (req, res, next) => {
-  Blog.find().then((blogs) => {
-    console.log(req.session);
+  const page = +req.query.page || 1;
+  let totalBlogs = 0;
 
-    res.render("notes/blog", {
-      activePage: "/blogs",
-      blogs: blogs,
-      pageTitle: "Blogs",
+  Blog.countDocuments()
+    .then((count) => {
+      totalBlogs = count;
+      return Blog.find()
+        .skip((page - 1) * BLOG_LIMIT)
+        .limit(BLOG_LIMIT);
+    })
+    .then((blogs) => {
+      res.render("notes/blog", {
+        activePage: "/blogs",
+        blogs: blogs,
+        pageTitle: "Blogs",
+        previousPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage: Math.ceil(totalBlogs / BLOG_LIMIT),
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
     });
-  }).catch(err=>{
-    console.log(err);
-    next(err);
-  })
-
 };
 
 module.exports.getFullBlog = (req, res, next) => {
@@ -152,7 +164,7 @@ module.exports.postMyBlog = (req, res, next) => {
     });
 };
 
-module.exports.postDeleteBlog = (req, res, next) => {
+module.exports.deleteBlog = (req, res, next) => {
   let blogId = req.params.blogId;
 
   Blog.findById(blogId)
@@ -173,7 +185,9 @@ module.exports.postDeleteBlog = (req, res, next) => {
             if (err) {
               console.log(err);
             }
-            res.redirect("/myblogs");
+             res.status(200).json({
+      message: 'Product deleted successfully'
+    });
           });
         })
     })
