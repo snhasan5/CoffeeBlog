@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
@@ -7,6 +8,7 @@ const User = require("./models/user.models");
 const Blog = require("./models/blog.models");
 const blogRoutes = require("./routes/blog.routes");
 const authRoutes = require("./routes/auth.routes");
+const payRoutes = require("./routes/payment.routes")
 const Router = require("./routes/blog.routes");
 const cookieParser = require("cookie-parser");
 const { doubleCsrf } = require("csrf-csrf");
@@ -89,6 +91,7 @@ app.use((req,res,next)=>{
 })
 app.use(blogRoutes);
 app.use(authRoutes);
+app.use(payRoutes);
 
 app.use((req,res)=>{
   res.render('error/404',{

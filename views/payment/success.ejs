@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <%- include('../includes/navbar.ejs') %>
+
+    <main class="payment-result">
+        <section class="payment-result-card">
+            <p class="checkout-kicker">Payment complete</p>
+            <h1>Thanks for supporting CoffeeBlog.</h1>
+            <p>
+                Your donation helps keep the writing, notes, and coffee-fueled
+                ideas flowing.
+            </p>
+            <div class="payment-result-actions">
+                <a href="/blogs" class="blog-card-btn">Read Blogs</a>
+                <a href="/" class="blog-card-btn payment-secondary-btn">Home</a>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../includes/footer') %>
+</body>
+</html>

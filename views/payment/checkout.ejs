@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/main.css">
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <%- include('../includes/navbar.ejs') %>
+
+    <section class="checkout-hero">
+      <div class="checkout-copy">
+        <p class="checkout-kicker">Support CoffeeBlog</p>
+        <h1>Fuel the next good read.</h1>
+        <p>
+          Your contribution helps keep the blog running, the notes flowing,
+          and the coffee-fueled ideas alive.
+        </p>
+      </div>
+
+      <div class="checkout-panel">
+        <img
+          src="https://images.pexels.com/photos/8555658/pexels-photo-8555658.jpeg"
+          alt="Coffee being prepared"
+          class="checkout-image"
+        >
+
+        <form action="/create-checkout-session" method="POST" class="blog-form checkout-form">
+          <div>
+            <h2>Make a Donation</h2>
+            <p>Choose an amount and continue securely with Stripe.</p>
+          </div>
+
+          <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
+          <label for="donation">Donation Amount</label>
+          <input
+            type="number"
+            name="donation"
+            id="donation"
+            min="50"
+            step="1"
+            placeholder="Minimum INR 50"
+            required
+          >
+
+          <button type="submit" id="checkout-button" class="blog-card-btn">
+            Continue to Checkout
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <%- include('../includes/footer') %>
+  </body>
+</html>
